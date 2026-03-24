@@ -14,6 +14,13 @@ Explore and define the concept in depth before touching any code or tooling. Cov
 ### 2. Claude Code Configuration
 Set up the agentic tooling. Covers: hooks, permissions, skills, MCP servers, memory setup, CLAUDE.md rules. Goal: make the agentic workflow smooth and consistent from the first line of code.
 
+**Plugins installed:**
+- `frontend-design`
+- `superpowers`
+- `code-review`
+- `github`
+- `code-simplifier`
+
 ### 3. Stack Decision
 Choose the technologies that will be used. Covers: frontend framework, build tooling, deployment target, content parsing. Decisions should be informed by the architecture defined in step 1.
 
