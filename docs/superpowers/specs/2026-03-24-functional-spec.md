@@ -41,9 +41,14 @@ A web application that lets users explore a collection of knowledge bases as int
 
 ## Open Questions
 
-- What is the exact format of the human export? (PDF, markdown, HTML?)
-- What is the exact format of the agent export? (JSON, XML, plain structured text?)
-- What are the additional views beyond the graph?
-- What node types exist? Are they fixed by the framework or user-defined?
-- What edge types exist? Are they fixed by the framework or user-defined?
-- Search and filtering capabilities?
+- What are the additional views beyond the graph? (TBD after Claude Code configuration step)
+- What are the additional views beyond the graph? (TBD after Claude Code configuration step)
+- Layout and navigation details (TBD after Claude Code configuration step)
+
+## Resolved
+
+- Node types: fully user-defined
+- Edge types: fully user-defined
+- Search and filtering: yes — search nodes by name, filter graph by node type and edge type
+- Human export formats: PDF and Markdown
+- Agent export format: JSON
