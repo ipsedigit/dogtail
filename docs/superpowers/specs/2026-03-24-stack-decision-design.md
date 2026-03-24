@@ -8,7 +8,8 @@ Choose the technologies for dogtail: a local, browser-based knowledge graph expl
 
 ## Constraints
 
-- Runs locally only — no deployment target
+- No backend — content is baked in at build time
+- Deployable anywhere static (Vercel, Netlify, GitHub Pages) or run locally via Vite dev server
 - User does not understand frontend; stack is chosen by the developer
 - Output must be visually polished and usable
 
@@ -41,8 +42,8 @@ content/
 
 - The **build script** walks `content/`, parses frontmatter with `gray-matter`, and writes `public/graph.json`. Vite serves `public/` as static assets, so the app fetches `/graph.json` at startup.
 - `graph.json` contains all nodes (id, type, title, overview, markdown content, file mtime) and edges (source, target, type, label).
-- The **React app** loads `graph.json` once at startup via `fetch('/graph.json')`. In watch mode, the user triggers a browser refresh to reload updated data. No polling or HMR integration is required for v1.
-- **Watch mode**: the build script watches `content/` for changes and overwrites `public/graph.json`. The user refreshes the browser to see updates.
+- The **React app** loads `graph.json` once at startup via `fetch('/graph.json')`. In local dev, the user triggers a browser refresh to reload updated data. In production, `graph.json` is generated at deploy time and bundled as a static asset.
+- **Local dev watch mode**: the build script watches `content/` for changes and overwrites `public/graph.json`. The user refreshes the browser to see updates.
 
 ## Frontmatter Schema
 
