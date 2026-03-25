@@ -56,7 +56,7 @@ function buildManifest(contentDir: string): Manifest {
       title: bigbang?.title ?? slug,
       overview: bigbang?.overview ?? '',
       nodeCount: data.nodes.length,
-      updatedAt: Math.max(...data.nodes.map(n => n.mtime)),
+      updatedAt: data.nodes.length > 0 ? Math.max(...data.nodes.map(n => n.mtime)) : 0,
     })
   }
   return { kbs }
@@ -64,8 +64,8 @@ function buildManifest(contentDir: string): Manifest {
 
 // CLI entry point — only runs when invoked directly (not when imported by tests)
 const __filename = fileURLToPath(import.meta.url)
-const isMain = process.argv[1]?.replace(/\\/g, '/').endsWith('build-graph.ts') ||
-               process.argv[1]?.replace(/\\/g, '/').endsWith('build-graph.js')
+const isMain = process.argv[1] === __filename ||
+               process.argv[1] === __filename.replace(/\.ts$/, '.js')
 
 if (isMain) {
   const contentDir = path.resolve('content')
