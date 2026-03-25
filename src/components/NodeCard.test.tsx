@@ -7,7 +7,7 @@ vi.mock('@xyflow/react', () => ({
   Position: { Top: 'top', Bottom: 'bottom' },
 }))
 
-const props = {
+const props: { data: { id: string; type: string; title: string; overview: string; content: string; mtime: number; color: string }; selected: boolean } = {
   data: {
     id: 'tool-use',
     type: 'concept',
@@ -18,7 +18,7 @@ const props = {
     color: '#7c3aed',
   },
   selected: false,
-} as any
+}
 
 describe('NodeCard', () => {
   it('renders the title', () => {

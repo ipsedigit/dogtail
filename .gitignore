@@ -1,3 +1,5 @@
 .superpowers/
 .claude/
 .worktrees/
+public/manifest.json
+public/graph/

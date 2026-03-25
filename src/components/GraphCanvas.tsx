@@ -83,11 +83,11 @@ export default function GraphCanvas({
       labelBgStyle: { fill: '#0d1117' },
     }))
 
-  const laid = useMemo(() => layoutNodes(rawNodes, rawEdges), [graphData, focusNodeId, selectedNodeId])
+  const laid = useMemo(() => layoutNodes(rawNodes, rawEdges), [rawNodes, rawEdges])
   const [nodes, setNodes, onNodesChange] = useNodesState(laid)
   const [edges, , onEdgesChange] = useEdgesState(rawEdges)
 
-  useEffect(() => { setNodes(laid) }, [laid])
+  useEffect(() => { setNodes(laid) }, [laid, setNodes])
 
   return (
     <ReactFlow
