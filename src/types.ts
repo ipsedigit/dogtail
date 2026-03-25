@@ -19,3 +19,15 @@ export interface GraphData {
   nodes: GraphNode[]
   edges: GraphEdge[]
 }
+
+export interface KbMeta {
+  slug: string
+  title: string
+  overview: string
+  nodeCount: number
+  updatedAt: number       // ms timestamp of most-recently-modified node
+}
+
+export interface Manifest {
+  kbs: KbMeta[]
+}

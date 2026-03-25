@@ -1,0 +1,11 @@
+{
+  "kbs": [
+    {
+      "slug": "sample-kb",
+      "title": "Agentic Coding",
+      "overview": "A personal knowledge base about AI-assisted development",
+      "nodeCount": 4,
+      "updatedAt": 1774472446331.923
+    }
+  ]
+}
