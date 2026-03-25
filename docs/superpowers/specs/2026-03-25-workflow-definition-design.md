@@ -13,9 +13,10 @@ Define how dogtail is developed day-to-day: branching, commits, PRs, agentic ses
 - `main` is always stable. No direct commits except trivial housekeeping (e.g., CLAUDE.md updates).
 - Feature branches follow `feat/<phase>/<topic>` — e.g., `feat/p1/build-script`, `feat/p1/graph-canvas`.
   - Phase maps to the implementation plan phase number; topic is a short descriptive slug.
-  - Exception: `feat/initial-build` (existing branch) is grandfathered and does not follow this convention.
 - One branch per task — each branch maps 1:1 to a task spec.
-- When work is done: open a PR, self-review the diff, merge to `main`, delete the branch.
+- Branch is created by the human or the agent at the start of each feature.
+- No git worktrees — the agent works directly in the repo working tree on the feature branch.
+- When work is done: human reviews the diff, commits, opens a PR, self-reviews, merges to `main`, deletes the branch.
 
 ---
 
@@ -38,13 +39,14 @@ Define how dogtail is developed day-to-day: branching, commits, PRs, agentic ses
 
 ## Agentic Session Structure
 
-- `CLAUDE.md` (project root) is the persistent context anchor. It must be created before the first implementation session. It contains: project overview, stack, constraints, active skills, and workflow rules. Creating CLAUDE.md is a prerequisite task, not covered by this spec.
+- `CLAUDE.md` (project root) is the persistent context anchor. It contains: project overview, stack, constraints, active skills, and workflow rules.
 - Every task has a spec (see Spec Creation below). The spec is what the agent reads to orient itself for that task.
 - Session flow:
-  1. Human points agent at a task spec
-  2. Agent implements against the spec
-  3. Human reviews the diff and commits
-  4. Human opens a PR, self-reviews, and merges
+  1. Human (or agent) creates a feature branch from `main`
+  2. Human points agent at a task spec
+  3. Agent implements directly in the working tree — no worktrees
+  4. Human reviews the diff and commits
+  5. Human opens a PR, self-reviews, and merges
 - Chat is ephemeral and used to refine specs mid-session. The agent writes the refined spec to disk during the session; the human commits it after.
 - Session handoff docs (like `2026-03-25-session-handoff.md`) were used during the project setup phase and are no longer needed going forward. The spec + CLAUDE.md replace them.
 
