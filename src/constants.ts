@@ -7,7 +7,7 @@ export const NODE_TYPE_PALETTE = [
   '#fb923c', // orange
   '#34d399', // teal
   '#f87171', // red
-]
+] as const
 
 export const EDGE_TYPE_PALETTE = [
   '#e879f9', // fuchsia
@@ -18,4 +18,4 @@ export const EDGE_TYPE_PALETTE = [
   '#4ade80', // green
   '#f472b6', // pink
   '#facc15', // yellow
-]
+] as const
