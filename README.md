@@ -50,4 +50,10 @@ Full markdown content here.
 npm install
 npm run build:graph   # generate graph JSON from content/
 npm run dev           # start Vite dev server
+npm run test          # run tests (watch mode)
+npm run test:run      # run tests once
+npm run build         # production build
+npm run preview       # preview production build locally
 ```
+
+After adding or editing content files, re-run `npm run build:graph` to regenerate the graph JSON before refreshing the app.
