@@ -4,3 +4,4 @@
 public/manifest.json
 public/graph/
 /node_modules/*
+/dist/*
