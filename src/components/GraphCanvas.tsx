@@ -30,12 +30,11 @@ function layoutNodes(nodes: Node[], edges: Edge[]): Node[] {
   })
 }
 
-function getNeighborhood(graphData: GraphData, focusId: string) {
+export function getNeighborhood(graphData: GraphData, focusId: string) {
   const ids = new Set([focusId])
   const edgeIds = new Set<string>()
   graphData.edges.forEach(e => {
-    if (e.source === focusId || e.target === focusId) {
-      ids.add(e.source)
+    if (e.source === focusId) {
       ids.add(e.target)
       edgeIds.add(e.id)
     }
