@@ -5,3 +5,5 @@ public/manifest.json
 public/graph/
 /node_modules/*
 /dist/*
+/notes/1-error.txt
+/notes/1-init.txt
