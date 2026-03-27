@@ -62,15 +62,15 @@ export default function GraphCanvas({
     [graphData, focusNodeId]
   )
 
-  const rawNodes: Node[] = neighborNodes.map(n => ({
+  const rawNodes: Node[] = useMemo(() => neighborNodes.map(n => ({
     id: n.id,
     type: 'default',
     position: { x: 0, y: 0 },
     data: { ...n, color: nodeColors[n.type] ?? '#6e7681' },
     selected: n.id === selectedNodeId,
-  }))
+  })), [neighborNodes, nodeColors, selectedNodeId])
 
-  const rawEdges: Edge[] = graphData.edges
+  const rawEdges: Edge[] = useMemo(() => graphData.edges
     .filter(e => edgeIds.has(e.id))
     .map(e => ({
       id: e.id,
@@ -81,7 +81,7 @@ export default function GraphCanvas({
       markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors[e.type] ?? '#6e7681' },
       labelStyle: { fill: edgeColors[e.type] ?? '#6e7681', fontSize: 9, fontFamily: 'monospace' },
       labelBgStyle: { fill: '#0d1117' },
-    }))
+    })), [graphData.edges, edgeIds, edgeColors])
 
   const laid = useMemo(() => layoutNodes(rawNodes, rawEdges), [rawNodes, rawEdges])
   const [nodes, setNodes, onNodesChange] = useNodesState(laid)

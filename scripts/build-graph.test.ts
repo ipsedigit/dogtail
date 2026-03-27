@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import { mkdtempSync, writeFileSync } from 'fs'
+import { tmpdir } from 'os'
 import { buildKb } from './build-graph'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -24,10 +26,20 @@ describe('buildKb', () => {
     expect(edge?.target).toBe('claude-code')
   })
 
-  it('generates stable node ids from titles', () => {
+  it('generates node ids from filenames', () => {
     const kbDir = path.resolve(__dirname, '../content/sample-kb')
     const result = buildKb(kbDir)
     const node = result.nodes.find(n => n.title === 'Tool Use')
     expect(node?.id).toBe('tool-use')
+  })
+
+  it('uses filename stem as node id, not the title', () => {
+    const dir = mkdtempSync(path.join(tmpdir(), 'dogtail-test-'))
+    writeFileSync(
+      path.join(dir, 'my-file.md'),
+      '---\ntype: concept\ntitle: My Different Title\noverview: test\n---\ncontent'
+    )
+    const result = buildKb(dir)
+    expect(result.nodes[0].id).toBe('my-file')
   })
 })

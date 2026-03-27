@@ -3,7 +3,7 @@ type: tool
 title: Claude Code
 overview: "AI coding agent for terminal development"
 from:
-  - source: "Tool Use"
+  - source: tool-use
     edge: "requires"
 ---
 

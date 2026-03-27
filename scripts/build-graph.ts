@@ -4,10 +4,6 @@ import { fileURLToPath } from 'url'
 import matter from 'gray-matter'
 import type { GraphNode, GraphEdge, GraphData, KbMeta, Manifest } from '../src/types.js'
 
-function slugify(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-}
-
 export function buildKb(kbDir: string): GraphData {
   const files = fs.readdirSync(kbDir).filter(f => f.endsWith('.md'))
   const nodes: GraphNode[] = []
@@ -17,18 +13,18 @@ export function buildKb(kbDir: string): GraphData {
     const filePath = path.join(kbDir, file)
     const raw = fs.readFileSync(filePath, 'utf-8')
     const { data, content } = matter(raw)
-    const id = slugify(data.title ?? file.replace('.md', ''))
+    const id = path.basename(file, '.md')
     nodes.push({
       id,
       type: data.type ?? 'unknown',
-      title: data.title ?? file.replace('.md', ''),
+      title: data.title ?? id,
       overview: data.overview ?? '',
       content: content.trim(),
       mtime: fs.statSync(filePath).mtimeMs,
     })
     if (Array.isArray(data.from)) {
       for (const edge of data.from) {
-        const sourceId = slugify(edge.source)
+        const sourceId = edge.source
         edges.push({
           id: `${sourceId}-${id}-${edge.edge}`,
           source: sourceId,

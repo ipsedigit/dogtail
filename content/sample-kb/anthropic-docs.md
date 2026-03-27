@@ -3,7 +3,7 @@ type: resource
 title: Anthropic Docs
 overview: "Official API and model reference"
 from:
-  - source: "Tool Use"
+  - source: tool-use
     edge: "see also"
 ---
 
