@@ -8,6 +8,17 @@ function assignColors(values: string[], palette: readonly string[]): Record<stri
   return Object.fromEntries(values.map((v, i) => [v, palette[i % palette.length]]))
 }
 
+export function expandVisibleIds(
+  graphData: GraphData,
+  prev: Set<string>,
+  nodeId: string
+): Set<string> {
+  const targets = graphData.edges
+    .filter(e => e.source === nodeId)
+    .map(e => e.target)
+  return new Set([...prev, nodeId, ...targets])
+}
+
 interface Props {
   kb: KbMeta
   onBack: () => void
@@ -15,7 +26,7 @@ interface Props {
 
 export default function GraphPage({ kb, onBack }: Props) {
   const [graphData, setGraphData] = useState<GraphData | null>(null)
-  const [focusNodeId, setFocusNodeId] = useState<string | null>(null)
+  const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set())
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,7 +36,7 @@ export default function GraphPage({ kb, onBack }: Props) {
       .then((data: GraphData) => {
         setGraphData(data)
         const bb = data.nodes.find(n => n.type === 'bigbang') ?? data.nodes[0]
-        setFocusNodeId(bb?.id ?? null)
+        if (bb) setVisibleIds(new Set([bb.id]))
       })
       .catch(() => setError(`Could not load graph/${kb.slug}.json`))
   }, [kb.slug])
@@ -44,11 +55,11 @@ export default function GraphPage({ kb, onBack }: Props) {
 
   function handleNodeClick(node: GraphNode) {
     setSelectedNode(prev => prev?.id === node.id ? null : node)
-    setFocusNodeId(node.id)
+    setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
   }
 
   if (error) return <div className="error-screen">{error}</div>
-  if (!graphData || !focusNodeId) return <div className="loading-screen">Loading...</div>
+  if (!graphData || visibleIds.size === 0) return <div className="loading-screen">Loading...</div>
 
   return (
     <div className="graph-page">
@@ -64,7 +75,7 @@ export default function GraphPage({ kb, onBack }: Props) {
       <div className="graph-body">
         <GraphCanvas
           graphData={graphData}
-          focusNodeId={focusNodeId}
+          visibleIds={visibleIds}
           selectedNodeId={selectedNode?.id ?? null}
           onNodeClick={handleNodeClick}
           nodeColors={nodeColors}
