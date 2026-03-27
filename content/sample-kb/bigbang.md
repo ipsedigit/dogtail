@@ -1,7 +1,7 @@
 ---
 type: bigbang
 title: Agentic Coding
-overview: "A personal knowledge base about AI-assisted development"
+overview: "A personal knowledge base about AI-assisted agentic development learning"
 ---
 
-Everything I know about building software with AI agents.
+Everything I learned about building software with AI agents.
