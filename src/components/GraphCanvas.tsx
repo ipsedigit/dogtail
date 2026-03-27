@@ -30,23 +30,19 @@ function layoutNodes(nodes: Node[], edges: Edge[]): Node[] {
   })
 }
 
-export function getNeighborhood(graphData: GraphData, focusId: string) {
-  const ids = new Set([focusId])
-  const edgeIds = new Set<string>()
-  graphData.edges.forEach(e => {
-    if (e.source === focusId) {
-      ids.add(e.target)
-      edgeIds.add(e.id)
-    }
-  })
-  return { nodes: graphData.nodes.filter(n => ids.has(n.id)), edgeIds }
+export function getVisibleSubgraph(graphData: GraphData, visibleIds: Set<string>) {
+  const nodes = graphData.nodes.filter(n => visibleIds.has(n.id))
+  const edges = graphData.edges.filter(e =>
+    visibleIds.has(e.source) && visibleIds.has(e.target)
+  )
+  return { nodes, edges }
 }
 
 const nodeTypes = { default: NodeCard }
 
 interface Props {
   graphData: GraphData
-  focusNodeId: string
+  visibleIds: Set<string>
   selectedNodeId: string | null
   onNodeClick: (node: GraphNode) => void
   nodeColors: Record<string, string>
@@ -54,33 +50,31 @@ interface Props {
 }
 
 export default function GraphCanvas({
-  graphData, focusNodeId, selectedNodeId, onNodeClick, nodeColors, edgeColors,
+  graphData, visibleIds, selectedNodeId, onNodeClick, nodeColors, edgeColors,
 }: Props) {
-  const { nodes: neighborNodes, edgeIds } = useMemo(
-    () => getNeighborhood(graphData, focusNodeId),
-    [graphData, focusNodeId]
+  const { nodes: visibleNodes, edges: visibleEdges } = useMemo(
+    () => getVisibleSubgraph(graphData, visibleIds),
+    [graphData, visibleIds]
   )
 
-  const rawNodes: Node[] = useMemo(() => neighborNodes.map(n => ({
+  const rawNodes: Node[] = useMemo(() => visibleNodes.map(n => ({
     id: n.id,
     type: 'default',
     position: { x: 0, y: 0 },
     data: { ...n, color: nodeColors[n.type] ?? '#6e7681' },
     selected: n.id === selectedNodeId,
-  })), [neighborNodes, nodeColors, selectedNodeId])
+  })), [visibleNodes, nodeColors, selectedNodeId])
 
-  const rawEdges: Edge[] = useMemo(() => graphData.edges
-    .filter(e => edgeIds.has(e.id))
-    .map(e => ({
-      id: e.id,
-      source: e.source,
-      target: e.target,
-      label: e.label,
-      style: { stroke: edgeColors[e.type] ?? '#6e7681' },
-      markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors[e.type] ?? '#6e7681' },
-      labelStyle: { fill: edgeColors[e.type] ?? '#6e7681', fontSize: 9, fontFamily: 'monospace' },
-      labelBgStyle: { fill: '#0d1117' },
-    })), [graphData.edges, edgeIds, edgeColors])
+  const rawEdges: Edge[] = useMemo(() => visibleEdges.map(e => ({
+    id: e.id,
+    source: e.source,
+    target: e.target,
+    label: e.label,
+    style: { stroke: edgeColors[e.type] ?? '#6e7681' },
+    markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors[e.type] ?? '#6e7681' },
+    labelStyle: { fill: edgeColors[e.type] ?? '#6e7681', fontSize: 9, fontFamily: 'monospace' },
+    labelBgStyle: { fill: '#0d1117' },
+  })), [visibleEdges, edgeColors])
 
   const laid = useMemo(() => layoutNodes(rawNodes, rawEdges), [rawNodes, rawEdges])
   const [nodes, setNodes, onNodesChange] = useNodesState(laid)
