@@ -42,4 +42,12 @@ describe('buildKb', () => {
     const result = buildKb(dir)
     expect(result.nodes[0].id).toBe('my-file')
   })
+
+  it('includes bigbang → tool-use edge', () => {
+    const kbDir = path.resolve(__dirname, '../content/sample-kb')
+    const result = buildKb(kbDir)
+    const edge = result.edges.find(e => e.source === 'bigbang' && e.target === 'tool-use')
+    expect(edge).toBeDefined()
+    expect(edge?.label).toBe('covers')
+  })
 })
