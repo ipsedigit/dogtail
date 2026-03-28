@@ -6,14 +6,15 @@ interface Props {
   graphData: GraphData
   selectedNode: GraphNode | null
   edgeColors: Record<string, string>
+  nodeColors?: Record<string, string>
 }
 
-export default function Panel({ kb, graphData, selectedNode, edgeColors }: Props) {
+export default function Panel({ kb, graphData, selectedNode, edgeColors, nodeColors = {} }: Props) {
   return (
-    <aside className="panel">
+    <aside className="panel" style={{ width: selectedNode ? '380px' : '240px' }}>
       <div className="panel-body">
         {selectedNode
-          ? <NodeDetail node={selectedNode} graphData={graphData} />
+          ? <NodeDetail node={selectedNode} graphData={graphData} edgeColors={edgeColors} nodeColors={nodeColors} />
           : <KbOverview kb={kb} graphData={graphData} />}
       </div>
       <EdgeLegend edgeColors={edgeColors} />
@@ -46,26 +47,44 @@ function KbOverview({ kb, graphData }: { kb: KbMeta; graphData: GraphData }) {
   )
 }
 
-function NodeDetail({ node, graphData }: { node: GraphNode; graphData: GraphData }) {
+interface NodeDetailProps {
+  node: GraphNode
+  graphData: GraphData
+  edgeColors: Record<string, string>
+  nodeColors: Record<string, string>
+}
+
+function NodeDetail({ node, graphData, edgeColors, nodeColors }: NodeDetailProps) {
   const incoming = graphData.edges.filter(e => e.target === node.id)
   const outgoing = graphData.edges.filter(e => e.source === node.id)
   const html = marked.parse(node.content) as string
+  const typeColor = nodeColors[node.type] ?? 'var(--text-dim)'
 
   return (
     <div className="panel-detail">
       <div className="panel-label">{node.type}</div>
-      <div className="panel-title">{node.title}</div>
+      <div className="panel-node-title">{node.title}</div>
+      <div className="panel-accent-line" style={{ background: `linear-gradient(to right, ${typeColor}, transparent)` }} />
+      {node.overview && <div className="panel-overview-text">{node.overview}</div>}
       <div className="panel-content" dangerouslySetInnerHTML={{ __html: html }} />
       {(incoming.length > 0 || outgoing.length > 0) && (
         <div style={{ marginTop: 14 }}>
           <div className="panel-label">connections</div>
           {incoming.map(e => {
             const src = graphData.nodes.find(n => n.id === e.source)
-            return <div key={e.id} className="panel-edge">← {e.label} {src?.title}</div>
+            return (
+              <div key={e.id} className="panel-edge" style={{ color: edgeColors[e.type] ?? 'var(--text-muted)' }}>
+                ← {e.label} {src?.title}
+              </div>
+            )
           })}
           {outgoing.map(e => {
             const tgt = graphData.nodes.find(n => n.id === e.target)
-            return <div key={e.id} className="panel-edge">→ {e.label} {tgt?.title}</div>
+            return (
+              <div key={e.id} className="panel-edge" style={{ color: edgeColors[e.type] ?? 'var(--text-muted)' }}>
+                → {e.label} {tgt?.title}
+              </div>
+            )
           })}
         </div>
       )}

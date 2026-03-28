@@ -86,6 +86,7 @@ export default function GraphPage({ kb, onBack }: Props) {
           graphData={graphData}
           selectedNode={selectedNode}
           edgeColors={edgeColors}
+          nodeColors={nodeColors}
         />
       </div>
     </div>

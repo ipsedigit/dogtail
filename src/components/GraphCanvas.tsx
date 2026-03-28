@@ -4,7 +4,6 @@ import {
   Background,
   Controls,
   useNodesState,
-  useEdgesState,
   type Node,
   type Edge,
   MarkerType,
@@ -70,24 +69,22 @@ export default function GraphCanvas({
     source: e.source,
     target: e.target,
     label: e.label,
-    style: { stroke: edgeColors[e.type] ?? '#6e7681' },
+    style: { stroke: edgeColors[e.type] ?? '#6e7681', strokeWidth: 1.5 },
     markerEnd: { type: MarkerType.ArrowClosed, color: edgeColors[e.type] ?? '#6e7681' },
-    labelStyle: { fill: edgeColors[e.type] ?? '#6e7681', fontSize: 9, fontFamily: 'monospace' },
-    labelBgStyle: { fill: '#0d1117' },
+    labelStyle: { fill: edgeColors[e.type] ?? '#6e7681', fontSize: 11, fontFamily: 'monospace' },
+    labelBgStyle: { fill: '#0d1117', borderRadius: 3, fillOpacity: 0.85 },
   })), [visibleEdges, edgeColors])
 
   const laid = useMemo(() => layoutNodes(rawNodes, rawEdges), [rawNodes, rawEdges])
   const [nodes, setNodes, onNodesChange] = useNodesState(laid)
-  const [edges, , onEdgesChange] = useEdgesState(rawEdges)
 
   useEffect(() => { setNodes(laid) }, [laid, setNodes])
 
   return (
     <ReactFlow
       nodes={nodes}
-      edges={edges}
+      edges={rawEdges}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
       onNodeClick={(_, node) => {
         const gn = graphData.nodes.find(n => n.id === node.id)
         if (gn) onNodeClick(gn)
