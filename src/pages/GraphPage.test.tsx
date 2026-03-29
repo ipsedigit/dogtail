@@ -1,7 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import GraphPage, { expandVisibleIds } from './GraphPage'
 import type { KbMeta, GraphData } from '../types'
+
+vi.mock('../components/GraphCanvas', () => ({
+  default: ({ onNodeClick, graphData }: { onNodeClick: (n: any) => void; graphData: any }) => (
+    <div>
+      {graphData.nodes.map((n: any) => (
+        <button key={n.id} data-testid={`node-${n.id}`} onClick={() => onNodeClick(n)}>
+          {n.title}
+        </button>
+      ))}
+    </div>
+  ),
+}))
 
 const kb: KbMeta = { slug: 'sample-kb', title: 'Sample KB', overview: 'A test', nodeCount: 2, updatedAt: 0 }
 
@@ -55,5 +67,57 @@ describe('GraphPage', () => {
     expect(result.has('root')).toBe(true)
     expect(result.has('child')).toBe(true)
     expect(result.has('other')).toBe(true)
+  })
+})
+
+describe('GraphPage — node splash', () => {
+  const kbSplash: KbMeta = { slug: 'splash-kb', title: 'Splash KB', overview: '', nodeCount: 2, updatedAt: 0 }
+
+  const graphDataWithContent: GraphData = {
+    nodes: [
+      { id: 'root', type: 'bigbang', title: 'Root', overview: '', content: '', mtime: 0 },
+      { id: 'child', type: 'concept', title: 'Child', overview: 'An overview', content: '## Body\n\nSome text.', mtime: 0 },
+    ],
+    edges: [],
+  }
+
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(graphDataWithContent),
+    }))
+  })
+
+  it('opens splash when clicking a node with content', async () => {
+    render(<GraphPage kb={kbSplash} onBack={vi.fn()} />)
+    await waitFor(() => screen.getByTestId('node-child'))
+    fireEvent.click(screen.getByTestId('node-child'))
+    expect(screen.getAllByText('Child').length).toBeGreaterThan(0)
+    expect(document.querySelector('.node-splash-backdrop')).not.toBeNull()
+  })
+
+  it('does not open splash when clicking a node with empty content', async () => {
+    render(<GraphPage kb={kbSplash} onBack={vi.fn()} />)
+    await waitFor(() => screen.getByTestId('node-root'))
+    fireEvent.click(screen.getByTestId('node-root'))
+    expect(document.querySelector('.node-splash-backdrop')).toBeNull()
+  })
+
+  it('closes splash when clicking same node again', async () => {
+    render(<GraphPage kb={kbSplash} onBack={vi.fn()} />)
+    await waitFor(() => screen.getByTestId('node-child'))
+    fireEvent.click(screen.getByTestId('node-child'))
+    expect(document.querySelector('.node-splash-backdrop')).not.toBeNull()
+    fireEvent.click(screen.getByTestId('node-child'))
+    expect(document.querySelector('.node-splash-backdrop')).toBeNull()
+  })
+
+  it('panel still receives selectedNode regardless of content', async () => {
+    render(<GraphPage kb={kbSplash} onBack={vi.fn()} />)
+    await waitFor(() => screen.getByTestId('node-root'))
+    fireEvent.click(screen.getByTestId('node-root'))
+    // Panel shows node detail — panel-detail appears when selectedNode is set.
+    // Root has no content so no splash, but panel should still update.
+    expect(document.querySelector('.panel-detail')).not.toBeNull()
   })
 })

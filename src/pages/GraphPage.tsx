@@ -3,6 +3,7 @@ import type { KbMeta, GraphData, GraphNode } from '../types'
 import { NODE_TYPE_PALETTE, EDGE_TYPE_PALETTE } from '../constants'
 import GraphCanvas from '../components/GraphCanvas'
 import Panel from '../components/Panel'
+import NodeSplash from '../components/NodeSplash'
 
 function assignColors(values: string[], palette: readonly string[]): Record<string, string> {
   return Object.fromEntries(values.map((v, i) => [v, palette[i % palette.length]]))
@@ -28,6 +29,7 @@ export default function GraphPage({ kb, onBack }: Props) {
   const [graphData, setGraphData] = useState<GraphData | null>(null)
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set())
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
+  const [splashNode, setSplashNode] = useState<GraphNode | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -56,6 +58,9 @@ export default function GraphPage({ kb, onBack }: Props) {
   function handleNodeClick(node: GraphNode) {
     setSelectedNode(prev => prev?.id === node.id ? null : node)
     setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
+    setSplashNode(prev =>
+      node.content.trim() ? (prev?.id === node.id ? null : node) : null
+    )
   }
 
   if (error) return <div className="error-screen">{error}</div>
@@ -89,6 +94,13 @@ export default function GraphPage({ kb, onBack }: Props) {
           nodeColors={nodeColors}
         />
       </div>
+      {splashNode && (
+        <NodeSplash
+          node={splashNode}
+          color={nodeColors[splashNode.type] ?? 'var(--text-dim)'}
+          onClose={() => setSplashNode(null)}
+        />
+      )}
     </div>
   )
 }
