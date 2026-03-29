@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { marked } from 'marked'
 import type { GraphNode } from '../types'
 
@@ -17,7 +17,7 @@ export default function NodeSplash({ node, color, onClose }: Props) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [onClose])
 
-  const html = marked.parse(node.content) as string
+  const html = useMemo(() => marked.parse(node.content) as string, [node.content])
 
   return (
     <div className="node-splash-backdrop" onClick={onClose}>
