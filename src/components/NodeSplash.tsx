@@ -2,13 +2,35 @@ import { useEffect, useMemo } from 'react'
 import { marked } from 'marked'
 import type { GraphNode } from '../types'
 
+interface NeighborEntry {
+  node: GraphNode
+  edgeLabel: string
+  color: string
+}
+
 interface Props {
   node: GraphNode
   color: string
+  neighbors?: NeighborEntry[]
+  canGoBack?: boolean
+  canGoForward?: boolean
   onClose: () => void
+  onNavigate?: (node: GraphNode) => void
+  onBack?: () => void
+  onForward?: () => void
 }
 
-export default function NodeSplash({ node, color, onClose }: Props) {
+export default function NodeSplash({
+  node,
+  color,
+  neighbors = [],
+  canGoBack = false,
+  canGoForward = false,
+  onClose,
+  onNavigate,
+  onBack,
+  onForward,
+}: Props) {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
@@ -22,7 +44,13 @@ export default function NodeSplash({ node, color, onClose }: Props) {
   return (
     <div className="node-splash-backdrop" onClick={onClose}>
       <div className="node-splash-card" onClick={e => e.stopPropagation()}>
-        <button className="node-splash-close" onClick={onClose}>✕ close</button>
+        <div className="node-splash-header">
+          <div className="node-splash-nav">
+            <button disabled={!canGoBack} onClick={onBack}>← back</button>
+            <button disabled={!canGoForward} onClick={onForward}>→ fwd</button>
+          </div>
+          <button className="node-splash-close" onClick={onClose}>✕ close</button>
+        </div>
         <div className="node-splash-type" style={{ color }}>● {node.type.toUpperCase()}</div>
         <div className="node-splash-title">{node.title}</div>
         <div
@@ -36,6 +64,23 @@ export default function NodeSplash({ node, color, onClose }: Props) {
           className="node-splash-content"
           dangerouslySetInnerHTML={{ __html: html }}
         />
+        {neighbors.length > 0 && (
+          <div className="node-splash-connected">
+            <div className="node-splash-connected-label">Connected</div>
+            <div className="node-splash-connected-chips">
+              {neighbors.map(n => (
+                <button
+                  key={n.node.id}
+                  className="node-splash-chip"
+                  style={{ color: n.color }}
+                  onClick={() => onNavigate?.(n.node)}
+                >
+                  ● {n.node.title}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

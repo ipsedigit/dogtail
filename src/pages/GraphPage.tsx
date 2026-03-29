@@ -29,7 +29,8 @@ export default function GraphPage({ kb, onBack }: Props) {
   const [graphData, setGraphData] = useState<GraphData | null>(null)
   const [visibleIds, setVisibleIds] = useState<Set<string>>(new Set())
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
-  const [splashNode, setSplashNode] = useState<GraphNode | null>(null)
+  const [splashHistory, setSplashHistory] = useState<GraphNode[]>([])
+  const [splashIndex, setSplashIndex] = useState<number>(-1)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -55,12 +56,69 @@ export default function GraphPage({ kb, onBack }: Props) {
     return assignColors(types, EDGE_TYPE_PALETTE)
   }, [graphData])
 
+  const splashNode = splashHistory[splashIndex] ?? null
+  const canGoBack = splashIndex > 0
+  const canGoForward = splashIndex < splashHistory.length - 1
+
+  const splashNeighbors = useMemo(() => {
+    if (!graphData || !splashNode) return []
+    const seen = new Set<string>()
+    const result: { node: GraphNode; edgeLabel: string; color: string }[] = []
+    for (const edge of graphData.edges) {
+      let neighborId: string | null = null
+      const label = edge.label
+      if (edge.source === splashNode.id) neighborId = edge.target
+      else if (edge.target === splashNode.id) neighborId = edge.source
+      if (!neighborId || seen.has(neighborId)) continue
+      seen.add(neighborId)
+      const neighbor = graphData.nodes.find(n => n.id === neighborId)
+      if (neighbor) result.push({ node: neighbor, edgeLabel: label, color: nodeColors[neighbor.type] ?? 'var(--text-dim)' })
+    }
+    return result
+  }, [graphData, splashNode, nodeColors])
+
+  function navigateSplash(node: GraphNode) {
+    setSplashHistory(prev => [...prev.slice(0, splashIndex + 1), node])
+    setSplashIndex(splashIndex + 1)
+    setSelectedNode(node)
+    setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
+  }
+
+  function splashBack() {
+    const newIndex = splashIndex - 1
+    const node = splashHistory[newIndex]
+    setSplashIndex(newIndex)
+    setSelectedNode(node)
+    setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
+  }
+
+  function splashForward() {
+    const newIndex = splashIndex + 1
+    const node = splashHistory[newIndex]
+    setSplashIndex(newIndex)
+    setSelectedNode(node)
+    setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
+  }
+
   function handleNodeClick(node: GraphNode) {
     setSelectedNode(prev => prev?.id === node.id ? null : node)
     setVisibleIds(prev => expandVisibleIds(graphData!, prev, node.id))
-    setSplashNode(prev =>
-      node.content.trim() ? (prev?.id === node.id ? null : node) : null
-    )
+    if (node.content.trim()) {
+      const currentIsSameNode = splashHistory[splashIndex]?.id === node.id
+      const hasForwardHistory = splashIndex < splashHistory.length - 1
+      if (currentIsSameNode && !hasForwardHistory) {
+        // toggle off: same node, no forward history to clear
+        setSplashHistory([])
+        setSplashIndex(-1)
+      } else {
+        // open fresh: new node OR same node with forward history to reset
+        setSplashHistory([node])
+        setSplashIndex(0)
+      }
+    } else {
+      setSplashHistory([])
+      setSplashIndex(-1)
+    }
   }
 
   if (error) return <div className="error-screen">{error}</div>
@@ -98,7 +156,13 @@ export default function GraphPage({ kb, onBack }: Props) {
         <NodeSplash
           node={splashNode}
           color={nodeColors[splashNode.type] ?? 'var(--text-dim)'}
-          onClose={() => setSplashNode(null)}
+          neighbors={splashNeighbors}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          onClose={() => { setSplashHistory([]); setSplashIndex(-1) }}
+          onNavigate={navigateSplash}
+          onBack={splashBack}
+          onForward={splashForward}
         />
       )}
     </div>
