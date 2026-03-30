@@ -64,7 +64,7 @@ describe('NodeSplash', () => {
   })
 })
 
-describe('NodeSplash — navigation', () => {
+describe('NodeSplash — neighbors', () => {
   const neighbor: GraphNode = {
     id: 'agent-loop',
     type: 'concept',
@@ -74,60 +74,12 @@ describe('NodeSplash — navigation', () => {
     mtime: 0,
   }
 
-  it('back button is disabled when canGoBack is false', () => {
-    render(
-      <NodeSplash
-        node={node} color="#7c3aed" onClose={vi.fn()}
-        canGoBack={false} canGoForward={false}
-        neighbors={[]} onNavigate={vi.fn()} onBack={vi.fn()} onForward={vi.fn()}
-      />
-    )
-    expect(screen.getByText(/← back/i)).toBeDisabled()
-  })
-
-  it('back button calls onBack when canGoBack is true', () => {
-    const onBack = vi.fn()
-    render(
-      <NodeSplash
-        node={node} color="#7c3aed" onClose={vi.fn()}
-        canGoBack={true} canGoForward={false}
-        neighbors={[]} onNavigate={vi.fn()} onBack={onBack} onForward={vi.fn()}
-      />
-    )
-    fireEvent.click(screen.getByText(/← back/i))
-    expect(onBack).toHaveBeenCalledTimes(1)
-  })
-
-  it('forward button is disabled when canGoForward is false', () => {
-    render(
-      <NodeSplash
-        node={node} color="#7c3aed" onClose={vi.fn()}
-        canGoBack={false} canGoForward={false}
-        neighbors={[]} onNavigate={vi.fn()} onBack={vi.fn()} onForward={vi.fn()}
-      />
-    )
-    expect(screen.getByText(/→ fwd/i)).toBeDisabled()
-  })
-
-  it('forward button calls onForward when canGoForward is true', () => {
-    const onForward = vi.fn()
-    render(
-      <NodeSplash
-        node={node} color="#7c3aed" onClose={vi.fn()}
-        canGoBack={false} canGoForward={true}
-        neighbors={[]} onNavigate={vi.fn()} onBack={vi.fn()} onForward={onForward}
-      />
-    )
-    fireEvent.click(screen.getByText(/→ fwd/i))
-    expect(onForward).toHaveBeenCalledTimes(1)
-  })
-
   it('renders Connected section when neighbors are provided', () => {
     render(
       <NodeSplash
         node={node} color="#7c3aed" onClose={vi.fn()}
         neighbors={[{ node: neighbor, edgeLabel: 'links', color: '#d2a8ff' }]}
-        onNavigate={vi.fn()} onBack={vi.fn()} onForward={vi.fn()}
+        onNavigate={vi.fn()}
       />
     )
     expect(screen.getByText(/connected/i)).toBeInTheDocument()
@@ -138,7 +90,8 @@ describe('NodeSplash — navigation', () => {
     render(
       <NodeSplash
         node={node} color="#7c3aed" onClose={vi.fn()}
-        neighbors={[]} onNavigate={vi.fn()} onBack={vi.fn()} onForward={vi.fn()}
+        neighbors={[]}
+        onNavigate={vi.fn()}
       />
     )
     expect(screen.queryByText(/connected/i)).toBeNull()
@@ -150,10 +103,10 @@ describe('NodeSplash — navigation', () => {
       <NodeSplash
         node={node} color="#7c3aed" onClose={vi.fn()}
         neighbors={[{ node: neighbor, edgeLabel: 'links', color: '#d2a8ff' }]}
-        onNavigate={onNavigate} onBack={vi.fn()} onForward={vi.fn()}
+        onNavigate={onNavigate}
       />
     )
-    fireEvent.click(screen.getByText(/Agent Loop/i))
+    fireEvent.click(screen.getByRole('button', { name: /Agent Loop/i }))
     expect(onNavigate).toHaveBeenCalledWith(neighbor)
   })
 })
