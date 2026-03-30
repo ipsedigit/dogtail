@@ -12,24 +12,16 @@ interface Props {
   node: GraphNode
   color: string
   neighbors?: NeighborEntry[]
-  canGoBack?: boolean
-  canGoForward?: boolean
   onClose: () => void
   onNavigate?: (node: GraphNode) => void
-  onBack?: () => void
-  onForward?: () => void
 }
 
 export default function NodeSplash({
   node,
   color,
   neighbors = [],
-  canGoBack = false,
-  canGoForward = false,
   onClose,
   onNavigate,
-  onBack,
-  onForward,
 }: Props) {
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -44,13 +36,7 @@ export default function NodeSplash({
   return (
     <div className="node-splash-backdrop" onClick={onClose}>
       <div className="node-splash-card" onClick={e => e.stopPropagation()}>
-        <div className="node-splash-header">
-          <div className="node-splash-nav">
-            <button disabled={!canGoBack} onClick={onBack}>← back</button>
-            <button disabled={!canGoForward} onClick={onForward}>→ fwd</button>
-          </div>
-          <button className="node-splash-close" onClick={onClose}>✕ close</button>
-        </div>
+        <button className="node-splash-close" onClick={onClose}>✕ close</button>
         <div className="node-splash-type" style={{ color }}>● {node.type.toUpperCase()}</div>
         <div className="node-splash-title">{node.title}</div>
         <div

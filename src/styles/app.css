@@ -194,24 +194,6 @@ body {
 .node-splash-content pre { background: var(--surface); border: 1px solid var(--border-dim); padding: 12px; border-radius: 4px; overflow-x: auto; margin-bottom: 10px; }
 .node-splash-content pre code { background: none; padding: 0; }
 
-.node-splash-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.node-splash-nav { display: flex; gap: 6px; }
-.node-splash-nav button {
-  background: var(--surface);
-  border: 1px solid var(--border-dim);
-  border-radius: 4px;
-  color: var(--text);
-  padding: 3px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-.node-splash-nav button:disabled { opacity: 0.3; cursor: default; }
-.node-splash-nav button:not(:disabled):hover { background: var(--surface-raised, #21262d); }
 .node-splash-connected { margin-top: 20px; border-top: 1px solid var(--border-dim); padding-top: 16px; }
 .node-splash-connected-label {
   font-size: 11px;
