@@ -1,5 +1,5 @@
 .superpowers/
-.claude/
+.claude/settings.local.json
 .worktrees/
 public/manifest.json
 public/graph/
