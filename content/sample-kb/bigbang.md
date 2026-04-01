@@ -1,7 +1,7 @@
 ---
 type: bigbang
 title: Agentic Coding
-overview: "A personal knowledge base about AI-assisted agentic development learning"
+overview: "Una knowledge base personale sull'apprendimento dell'agentic coding"
 ---
 
-Everything I learned about building software with AI agents.
+Tutto quello che sto imparando sull'agentic coding

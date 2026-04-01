@@ -1,7 +1,7 @@
 ---
 type: resources
-title: Resources
-overview: "Related resources"
+title: Risorse
+overview: "Risorse legate all'agentic coding"
 from:
   - source: bigbang
     edge: "hasResources"
