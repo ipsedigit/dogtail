@@ -1,7 +1,7 @@
 ---
 type: error
 from:
-  - source: errors
+  - source: hasErrors
     edge: "errorIs"
 ---
 # Error
